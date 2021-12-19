@@ -32,6 +32,8 @@ class Directory extends React.Component<DirectoryProps, DirectoryProps> {
     if (directory.isDirectory) {
       this.getDataForNextTab(directory);
     }
+
+    AppStateService.selectFile(`${directory.location}\\${directory.name}`, this.props.myColumnIndex)
   }
 
   private getDataForNextTab(directory: IDirectoryItem): void {

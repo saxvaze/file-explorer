@@ -1,15 +1,17 @@
-import { BrowserWindow, BrowserWindowConstructorOptions, app, ipcMain, IpcMainEvent } from "electron";
+import { BrowserWindow, BrowserWindowConstructorOptions, app, ipcMain, IpcMainEvent, dialog } from "electron";
 import * as path from "path";
 import * as isDev from 'electron-is-dev';
 import * as preload from "./preload";
 import FileSystemController from "./controllers/file-system.controller";
 
 export class Main {
+  private mainWindow: BrowserWindow;
+
   public init(): void {
     this.appReady()
       .then(() => {
-        const window = this.createWindow(this.getWindowConfig());
-        window.setMenu(null)
+        this.mainWindow = this.createWindow(this.getWindowConfig());
+        this.mainWindow.setMenu(null);
 
         this.setActivateHandler();
         this.setWindowCloseHandler();
@@ -17,7 +19,7 @@ export class Main {
 
         // Open the DevTools.
         if (isDev) {
-          window.webContents.openDevTools();
+          this.mainWindow.webContents.openDevTools();
         }
       });
   }
@@ -98,10 +100,28 @@ export class Main {
             forColumn: message.forColumn
           });
         })
-    })
+    });
 
     ipcMain.on('file-open', (event: IpcMainEvent, message: string) => {
       FileSystemController.openFile(message);
+    });
+
+    ipcMain.on('file-delete', (event: IpcMainEvent, message: { fileFullPath: string, columnIndex: number }) => {
+      dialog.showMessageBox(this.mainWindow, {
+        type: 'question',
+        title: 'Confirm',
+        buttons: ['Yes', 'No'],
+        message: 'Are you sure you want to delete file?'
+      }).then(out => {
+        if (out.response === 0) {
+          FileSystemController.deleteFile(message.fileFullPath, (err) => {
+            event.reply('file-deleted', message);
+          })
+        }
+        else {
+          event.reply('file-deleted', { columnIndex: -1 });
+        }
+      })
     })
   }
 

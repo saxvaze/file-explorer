@@ -12,6 +12,12 @@ const FileSystemServcie = {
     },
     openFile: (fileFullPath: string) => {
         IpcService.send('file-open', fileFullPath);
+    },
+    deleteFile: (data: { fileFullPath: string, columnIndex: number }) => {
+        IpcService.send('file-delete', data);
+    },
+    fileDeleted: (callback: Function) => {
+        return IpcService.on('file-deleted', callback);
     }
 };
 

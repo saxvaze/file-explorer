@@ -2,9 +2,9 @@ import React from 'react';
 import IpcService from './common/services/ipc.service';
 import FileSystemServcie from './common/services/file-system.service';
 import DirectoryColumns from './components/directory-columns/directory-columns';
-import IDirectoryItem from './common/models/directory-item';
 import AppStateService from './common/services/app-state.service';
 import FileSystemGenericResponse from './common/models/file-system-generic-response';
+import { take } from 'rxjs';
 
 class App extends React.Component {
   componentDidMount(): void {
@@ -12,6 +12,8 @@ class App extends React.Component {
       .then(() => {
         this.subscribeFileSystem();
         this.getRootFolder();
+        this.hostButtonsListener();
+        this.subscribeServerEvents();
       });
 
     this.pingServer();
@@ -54,15 +56,38 @@ class App extends React.Component {
     FileSystemServcie.openRootFolder();
   }
 
+  private hostButtonsListener(): void {
+    document.addEventListener("keydown", ({ key }) => {
+      if (key === "Delete") {
+        AppStateService.getSelectedFile()
+          .pipe(take(1))
+          .subscribe(file => {
+            if (file?.fileFullPath) {
+              FileSystemServcie.deleteFile(file);
+            }
+          })
+      }
+    })
+  }
+
+  private subscribeServerEvents(): void {
+    FileSystemServcie.fileDeleted((response: { fileFullPath: string, columnIndex: number }) => {
+      if (response.columnIndex > -1) {
+
+        let splitted = response.fileFullPath.split('\\');
+        splitted.pop();
+
+        FileSystemServcie.openFolder({ folder: splitted.join('\\'), forColumn: response.columnIndex });
+      }
+
+      AppStateService.selectFile('', 0)
+    })
+  }
+
   render(): JSX.Element {
     return (
       <>
         <DirectoryColumns />
-        {/* <DirectoryColumns content={{
-          first: this.state.content,
-          second: [],
-          third: []
-        }} /> */}
       </>
     );
   }

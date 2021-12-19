@@ -28,6 +28,9 @@ const FileSystemController = {
   },
   openFile: (fileFullPath: string) => {
     shell.openPath(fileFullPath);
+  },
+  deleteFile: (fileFullPath: string, callback: fs.NoParamCallback) => {
+    fs.unlink(fileFullPath, callback)
   }
 };
 
