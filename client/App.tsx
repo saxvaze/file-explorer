@@ -1,47 +1,66 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
 import IpcService from './common/services/ipc.service';
+import FileSystemServcie from './common/services/file-system.service';
+import DirectoryColumns from './components/directory-columns/directory-columns';
+import IDirectoryItem from './common/models/directory-item';
 
-class App extends React.Component {
+interface AppState {
+  title: string,
+  content: Array<any>
+}
+
+class App extends React.Component<{}, AppState> {
   constructor(props: any) {
     super(props);
+
+    this.state = {
+      title: "this is title",
+      content: []
+    };
   }
 
   componentDidMount(): void {
-    this.hostPingListener();
+    this.hostPingListener()
+      .then(() => {
+        this.subscribeFileSystem();
+        this.getRootFolder();
+      })
     this.pingServer();
   }
 
-  private hostPingListener(): void {
-    IpcService.on('ipc-ping')
-      .then(data => {
-        console.log("111", data);
-      });
+  private hostPingListener(): Promise<void> {
+    return new Promise(resolver => {
+      IpcService.on('ipc-ping', (data: string) => {
+        if (data === 'pong') {
+          resolver();
+        }
+      })
+    });
   }
 
   private pingServer(): void {
     IpcService.send('ipc-ping', 'ping');
   }
 
-  render() {
+  private subscribeFileSystem(): void {
+    FileSystemServcie.getFileSystem((response: Array<IDirectoryItem>) => {
+      this.setState({ ...this.state, content: response });
+    });
+  }
+
+  private getRootFolder(): void {
+    FileSystemServcie.openRootFolder();
+  }
+
+  render(): JSX.Element {
     return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.tsx</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
-      </div>
+      <>
+        <DirectoryColumns content={{
+          first: this.state.content,
+          second: [],
+          third: []
+        }} />
+      </>
     );
   }
 }

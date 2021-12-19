@@ -15,14 +15,16 @@ const IpcService = {
    * @param channel name of channel
    * @returns Promise
    */
-  on: (channel: string) => {
-    return new Promise(resolve => {
-      IpcService.getIpc().on(channel, (event: any, data: any) => {
-        console.log(event);
-
-        resolve(event)
-      })
+  on: (channel: string, callback: Function) => {
+    IpcService.getIpc().on(channel, (event: any, data: any) => {
+      callback(event)
     })
+
+    // return new Promise(resolve => {
+    //   IpcService.getIpc().on(channel, (event: any, data: any) => {
+    //     resolve(event)
+    //   })
+    // })
   },
   /**
    * @description sends message via ipc to main process

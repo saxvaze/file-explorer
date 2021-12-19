@@ -1,0 +1,13 @@
+.wrapper {
+  cursor: pointer;
+
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+  }
+
+  .directory-item-name {
+    display: inline-block;
+    vertical-align: top;
+    margin-left: 12px;
+  }
+}

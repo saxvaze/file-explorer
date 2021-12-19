@@ -1,0 +1,44 @@
+.icon {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  background-repeat: no-repeat;
+  background-position: left center;
+  background-size: 100% auto;
+
+  &.icon-directory {
+    background-image: url("/public/icons/folder-solid.png");
+  }
+
+  &.icon-image {
+    background-image: url("/public/icons/image-solid.png");
+  }
+
+  &.icon-js {
+    background-image: url("/public/icons/js-square-brands.png");
+  }
+
+  &.icon-html {
+    background-image: url("/public/icons/html5-brands.png");
+  }
+
+  &.icon-css {
+    background-image: url("/public/icons/css3-alt-brands.png");
+  }
+
+  &.icon-code {
+    background-image: url("/public/icons/code-solid.png");
+  }
+
+  &.icon-audio {
+    background-image: url("/public/icons/file-audio-solid.png");
+  }
+
+  &.icon-video {
+    background-image: url("/public/icons/file-video-solid.png");
+  }
+
+  &.icon-blank {
+    background-image: url("/public/icons/file-alt-solid.png");
+  }
+}

@@ -2,17 +2,18 @@ import { BrowserWindow, BrowserWindowConstructorOptions, app, ipcMain, IpcMainEv
 import * as path from "path";
 import * as isDev from 'electron-is-dev';
 import * as preload from "./preload";
+import FileSystemController from "./controllers/file-system.controller";
 
 export class MainProcess {
   public init(): void {
     this.appReady()
       .then(() => {
         const window = this.createWindow(this.getWindowConfig());
+        window.setMenu(null)
 
         this.setActivateHandler();
         this.setWindowCloseHandler();
         this.setRendererListeners();
-
 
         // Open the DevTools.
         if (isDev) {
@@ -81,9 +82,58 @@ export class MainProcess {
 
   private setRendererListeners(): void {
     ipcMain.on('ipc-ping', (event: IpcMainEvent, message: any) => {
-      console.log(message);
-
       event.reply('ipc-ping', 'pong');
+    });
+
+    ipcMain.on('file-system', (event: IpcMainEvent, message: any) => {
+      let directoryPath: string = message;
+
+      if (message == "/") {
+        directoryPath = FileSystemController.getRootDirectoryPath();
+      }
+
+      FileSystemController.getDirectoryContent(directoryPath)
+        .then(response => {
+          event.reply('file-system', this.getFormattedDirectoryItems(response, directoryPath));
+        })
     })
+
+    ipcMain.on('file-open', (event: IpcMainEvent, message: string) => {
+      FileSystemController.openFile(message);
+    })
+  }
+
+  private getFormattedDirectoryItems(items: Array<{ name: string, isDirectory: boolean }>, filePath: string): Array<any> {
+    let result: Array<any> = [];
+
+    items.forEach(item => {
+      // is file
+      if (item.isDirectory) {
+        result.push({
+          name: item.name,
+          selected: false,
+          isDirectory: true,
+          location: filePath
+        })
+      }
+      // is directory
+      else {
+        let splitted = item.name.split('.'),
+          extension = splitted.pop() as string,
+          name = item.name;
+
+        result.push({
+          name: name,
+          extension: extension,
+          selected: false,
+          isDirectory: false,
+          location: filePath
+        })
+      }
+    })
+
+    result.sort((a, b) => a.isDirectory ? -1 : 1)
+
+    return result;
   }
 }
