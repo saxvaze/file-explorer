@@ -5,10 +5,10 @@ const FileSystemServcie = {
         return IpcService.on('file-system', callback);
     },
     openRootFolder: () => {
-        IpcService.send('file-system', '/');
+        IpcService.send('file-system', { folder: '/', forColumn: 1 });
     },
-    openFolder: (folder: string) => {
-        IpcService.send('file-system', folder);
+    openFolder: (data: { folder: string, forColumn: number }) => {
+        IpcService.send('file-system', data);
     },
     openFile: (fileFullPath: string) => {
         IpcService.send('file-open', fileFullPath);

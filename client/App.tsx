@@ -3,28 +3,17 @@ import IpcService from './common/services/ipc.service';
 import FileSystemServcie from './common/services/file-system.service';
 import DirectoryColumns from './components/directory-columns/directory-columns';
 import IDirectoryItem from './common/models/directory-item';
+import AppStateService from './common/services/app-state.service';
+import FileSystemGenericResponse from './common/models/file-system-generic-response';
 
-interface AppState {
-  title: string,
-  content: Array<any>
-}
-
-class App extends React.Component<{}, AppState> {
-  constructor(props: any) {
-    super(props);
-
-    this.state = {
-      title: "this is title",
-      content: []
-    };
-  }
-
+class App extends React.Component {
   componentDidMount(): void {
     this.hostPingListener()
       .then(() => {
         this.subscribeFileSystem();
         this.getRootFolder();
-      })
+      });
+
     this.pingServer();
   }
 
@@ -43,8 +32,21 @@ class App extends React.Component<{}, AppState> {
   }
 
   private subscribeFileSystem(): void {
-    FileSystemServcie.getFileSystem((response: Array<IDirectoryItem>) => {
-      this.setState({ ...this.state, content: response });
+    FileSystemServcie.getFileSystem((response: FileSystemGenericResponse) => {
+      let forColumn = response.forColumn == 1 ? 'first' : response.forColumn == 2 ? 'second' : 'third',
+        state: any = { content: {} };
+
+      state.content[forColumn] = response.content;
+
+      if (response.forColumn == 1) {
+        state.content.second = [];
+        state.content.third = [];
+      }
+      else if (response.forColumn == 2) {
+        state.content.third = [];
+      }
+
+      AppStateService.updateState(state)
     });
   }
 
@@ -55,11 +57,12 @@ class App extends React.Component<{}, AppState> {
   render(): JSX.Element {
     return (
       <>
-        <DirectoryColumns content={{
+        <DirectoryColumns />
+        {/* <DirectoryColumns content={{
           first: this.state.content,
           second: [],
           third: []
-        }} />
+        }} /> */}
       </>
     );
   }

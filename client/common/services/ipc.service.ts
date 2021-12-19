@@ -19,12 +19,6 @@ const IpcService = {
     IpcService.getIpc().on(channel, (event: any, data: any) => {
       callback(event)
     })
-
-    // return new Promise(resolve => {
-    //   IpcService.getIpc().on(channel, (event: any, data: any) => {
-    //     resolve(event)
-    //   })
-    // })
   },
   /**
    * @description sends message via ipc to main process

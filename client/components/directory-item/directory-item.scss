@@ -5,9 +5,18 @@
     background-color: rgba(0, 0, 0, 0.1);
   }
 
-  .directory-item-name {
+  &.selected {
+    background-color: rgba(0, 0, 0, 0.15);
+  }
+
+  .name {
     display: inline-block;
     vertical-align: top;
     margin-left: 12px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: calc(100% - 32px);
+    user-select: none;
   }
 }

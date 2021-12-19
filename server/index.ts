@@ -1,5 +1,5 @@
-import { MainProcess } from './process-main';
+import { Main } from './main';
 
-const mainProcess = new MainProcess();
+const mainProcess = new Main();
 
 mainProcess.init();

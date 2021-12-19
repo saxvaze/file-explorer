@@ -7,9 +7,9 @@ class DirectoryItem extends React.Component<{ directory: IDirectoryItem }> {
   render(): JSX.Element {
     return (
       <>
-        <div key={this.props.directory.name} className="wrapper">
+        <div key={this.props.directory.name} className={`wrapper ${this.props.directory.selected ? 'selected' : ''}`}>
           <IconManager item={this.props.directory} />
-          <div className="directory-item-name">{this.props.directory.name}</div>
+          <div className="name">{this.props.directory.name}</div>
         </div>
       </>
     );

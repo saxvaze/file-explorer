@@ -1,0 +1,13 @@
+.column-wrapper {
+    width:100%;
+
+    .columnt {
+        width: 33.33%;
+        display: inline-block;
+        vertical-align: top;
+        padding: 0 12px;
+        box-sizing: border-box;
+        border-right: 1px solid rgba(0, 0, 0, 0.1);
+        height: calc(100vh - 1px);
+    }
+}

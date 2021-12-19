@@ -4,7 +4,7 @@ import * as isDev from 'electron-is-dev';
 import * as preload from "./preload";
 import FileSystemController from "./controllers/file-system.controller";
 
-export class MainProcess {
+export class Main {
   public init(): void {
     this.appReady()
       .then(() => {
@@ -45,8 +45,8 @@ export class MainProcess {
 
   private getWindowConfig(): BrowserWindowConstructorOptions {
     return {
-      width: 1024,
-      height: 768,
+      width: 1680,
+      height: 800,
       icon: path.join(__dirname, 'client/public/favicon.png'),
       webPreferences: {
         nodeIntegration: true,
@@ -85,16 +85,18 @@ export class MainProcess {
       event.reply('ipc-ping', 'pong');
     });
 
-    ipcMain.on('file-system', (event: IpcMainEvent, message: any) => {
-      let directoryPath: string = message;
-
-      if (message == "/") {
+    ipcMain.on('file-system', (event: IpcMainEvent, message: { folder: string, forColumn: number }) => {
+      let directoryPath: string = message.folder;
+      if (directoryPath == "/") {
         directoryPath = FileSystemController.getRootDirectoryPath();
       }
 
       FileSystemController.getDirectoryContent(directoryPath)
         .then(response => {
-          event.reply('file-system', this.getFormattedDirectoryItems(response, directoryPath));
+          event.reply('file-system', {
+            content: this.getFormattedDirectoryItems(response, directoryPath),
+            forColumn: message.forColumn
+          });
         })
     })
 
@@ -132,7 +134,7 @@ export class MainProcess {
       }
     })
 
-    result.sort((a, b) => a.isDirectory ? -1 : 1)
+    result.sort((a, b) => a.name.localeCompare(b.name) && a.isDirectory ? -1 : 1)
 
     return result;
   }
