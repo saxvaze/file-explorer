@@ -19,7 +19,7 @@ export class Main {
 
         // Open the DevTools.
         if (isDev) {
-          this.mainWindow.webContents.openDevTools();
+          // this.mainWindow.webContents.openDevTools();
         }
       });
   }
@@ -47,13 +47,12 @@ export class Main {
 
   private getWindowConfig(): BrowserWindowConstructorOptions {
     return {
-      width: 1680,
+      width: 1280,
       height: 800,
       icon: path.join(__dirname, 'client/public/favicon.png'),
       webPreferences: {
         nodeIntegration: true,
-        preload: path.join(__dirname, 'preload.js'),
-        // contextIsolation: false
+        preload: path.join(__dirname, 'preload.js')
       }
     }
   }
