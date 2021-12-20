@@ -23,4 +23,23 @@ Launches Electron app and renders content from [http://localhost:3000](http://lo
 
 ## How to launch?
 
-In order to run application properly, you need to launch `dev` and `launch-electron` scripts one-by-one
+1. clone project:
+```console
+> git clone https://github.com/saxvaze/file-explorer.git
+```
+2. enter to directory file-explorer
+```console
+> cd file-explorer
+```
+3. install all dependencies
+```console
+> npm install
+```
+4. run React code
+```console
+> npm run dev
+```
+5. launch Electron
+```console
+> npm run launch-electron
+```
