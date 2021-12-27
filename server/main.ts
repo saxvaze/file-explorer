@@ -128,7 +128,6 @@ export class Main {
     let result: Array<any> = [];
 
     items.forEach(item => {
-      // is file
       if (item.isDirectory) {
         result.push({
           name: item.name,
@@ -137,7 +136,6 @@ export class Main {
           location: filePath
         })
       }
-      // is directory
       else {
         let splitted = item.name.split('.'),
           extension = splitted.pop() as string,
